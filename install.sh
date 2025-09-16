@@ -88,6 +88,22 @@ echo -e "\n${BLUE}>>> Starting automated setup...${NC}"
 echo -e "\n${BLUE}>>> Installing all packages from the list (official & AUR)...${NC}"
 yay -Syu --needed "${PACKAGES[@]}"
 
+# --- LazyVim 설치 ---
+echo -e "\n${BLUE}>>> Checking for LazyVim base installation...${NC}"
+NVIM_CONFIG_DIR="$HOME/.config/nvim"
+
+if containsElement "neovim" "${PACKAGES[@]}" && [ ! -d "$NVIM_CONFIG_DIR" ]; then
+  echo -e "   ${YELLOW}LazyVim base directory not found at '$NVIM_CONFIG_DIR'.${NC}"
+  echo -e "   ${YELLOW}Cloning the LazyVim starter template...${NC}"
+  git clone https://github.com/LazyVim/starter "$NVIM_CONFIG_DIR"
+  rm -rf "${NVIM_CONFIG_DIR}/.git"
+  echo -e "   ${GREEN}LazyVim base successfully installed.${NC}"
+else
+  if containsElement "neovim" "${PACKAGES[@]}"; then
+    echo -e "   ${GREEN}Found existing LazyVim base directory. Skipping clone.${NC}"
+  fi
+fi
+
 # --- 심볼릭 링크 생성 ---
 echo -e "\n${BLUE}>>> Creating user-level symbolic links...${NC}"
 for src in "${!DOTFILES[@]}"; do
